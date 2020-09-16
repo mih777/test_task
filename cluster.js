@@ -8,8 +8,11 @@ if(cluster.isMaster) {
     console.log(`Master started Pid: ${pid} on port: ${port}`)
     for(let i = 0; i < os.cpus().length; i++){
         const worker = cluster.fork()
+        
         worker.on('exit', () => {
             console.log(`worker died! Pid: ${worker.process.pid}`)
+
+            // возрождаем убитый процесс
             cluster.fork()
         })
     }
@@ -17,5 +20,6 @@ if(cluster.isMaster) {
 }
 
 if(cluster.isWorker){
+    // подключаем воркер
     require('./worker')
 }
