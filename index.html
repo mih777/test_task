@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="output"></div>
+<br><br><hr><br>
+<button onClick="start_sending()" class="button_start">Начать отправку данных</button> 
+<button onClick="stop_sending()" class="button">Остановить отправку данных</button> 
+
+<script>
+
+        //==== частота отправки обьектов в милисекундах ================================
+        const sending_frequency = 1000
+
+        //максимальное количество обьектов в пакете
+        const quantity = 500
+ 
+        // выбираем div для вывода результата отправки
+        const output_result = document.getElementById('output')
+
+        // переменная старт/стоп отправка
+        let timerId
+        
+        // отпрвляем данные
+        function start_sending(){
+            timerId = setInterval(() => {generate_package()}, sending_frequency);
+        }
+        
+        // метод прекращения отправки обьектов
+        function stop_sending(){
+            clearInterval(timerId)
+            output_result.innerHTML = '<br><h2>data sending stoped</h2>'
+        }
+
+        // метод генерации и отправки обьектов
+        function generate_package(){
+
+            //Сюда заносим массив обьектов
+            let obj = []
+
+            // диапозон колличества создаваемых обьектов
+            let iter = randomInteger(1, quantity)
+            
+            // Создаем пачку обьектов
+            for(let i = 0; i < iter; i++){
+                let object = {
+                    price: randomInteger(1, 500),
+                    quantity: randomInteger(1, 500),
+                    amount: randomInteger(1, 500),
+                    object: randomInteger(1, 500),
+                    method: randomInteger(1, 500)
+                }
+                obj.push(object)
+            }
+            
+            //Отправляем пачку обьетов на сервер
+            fetch('http://localhost:3000/',{
+                method: 'POST',
+                body: JSON.stringify(obj),
+                headers: { "Content-Type": "application/json; charset=utf-8"  }
+            })
+
+            // выводим результат на страницу
+            output_result.innerHTML = `<h2>Отправлено ${obj.length} обьектов</h2> <br><br>`
+        }
+
+
+        // метод для создания случайного числа
+        function randomInteger(min, max) {
+            // получить случайное число
+            let rand = min - 0.5 + Math.random() * (max - min + 1);
+            return Math.round(rand);
+        }
+        
+        
+</script>
+</body>
+<html>
